@@ -10,6 +10,7 @@ import (
 
 type OrderService interface {
 	Save(ctx context.Context, request *model.PenjualanRequest) (*model.PenjualanResponse, error)
+	GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error)
 }
 
 type OrderServiceImpl struct {
@@ -33,5 +34,14 @@ func (s OrderServiceImpl) Save(ctx context.Context, request *model.PenjualanRequ
 
 	return &model.PenjualanResponse{
 		Message: "Success Save Data Penjualan",
+	}, nil
+}
+
+func (s OrderServiceImpl) GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error) {
+	netSales := request.Total / (1 + (request.PersenPajak / 100))
+	pajakRp := request.Total - netSales
+	return &model.TotalPriceResponse{
+		NetSales: netSales,
+		PajakRp:  pajakRp,
 	}, nil
 }

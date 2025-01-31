@@ -11,6 +11,7 @@ import (
 
 type OrderController interface {
 	Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	GetTotalPriceDetail(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
 type OrderControllerImpl struct {
@@ -27,13 +28,41 @@ func (c OrderControllerImpl) Save(writer http.ResponseWriter, request *http.Requ
 	err := decoder.Decode(&penjualanRequest)
 	helper.PanicIfError(err)
 
+	writer.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writer)
 	response, err := c.OrderService.Save(request.Context(), &penjualanRequest)
 	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
 		response.Message = "Terjadi Internal server error"
+		err = encoder.Encode(response)
+		helper.PanicIfError(err)
+		return
 	}
+
+	writer.WriteHeader(http.StatusOK)
+	err = encoder.Encode(response)
+	helper.PanicIfError(err)
+}
+
+func (c OrderControllerImpl) GetTotalPriceDetail(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var priceRequest = model.TotalPriceRequest{}
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&priceRequest)
+	helper.PanicIfError(err)
 
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
+	response, err := c.OrderService.GetTotalPriceDetail(request.Context(), &priceRequest)
+
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+		response.Message = "Terjadi Internal server error"
+		err = encoder.Encode(response)
+		helper.PanicIfError(err)
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
 	err = encoder.Encode(response)
 	helper.PanicIfError(err)
 }

@@ -30,6 +30,17 @@ type PenjualanResponse struct {
 	Message string
 }
 
+type TotalPriceRequest struct {
+	Total       float64 `json:"total"`
+	PersenPajak float64 `json:"persen_pajak"`
+}
+
+type TotalPriceResponse struct {
+	NetSales float64 `json:"net_sales"`
+	PajakRp  float64 `json:"pajak_rp"`
+	Message  string  `json:"message,omitempty"`
+}
+
 func (m *Penjualan) FromPenjualanRequest(request *PenjualanRequest) {
 	tanggalConverted, _ := convertTanggal(request.Tanggal)
 	jamConverted, _ := convertJam(request.Tanggal, request.Jam)
