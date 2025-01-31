@@ -6,11 +6,13 @@ import (
 	"api/nun_test/repository"
 	"context"
 	"database/sql"
+	"strconv"
 )
 
 type OrderService interface {
 	Save(ctx context.Context, request *model.PenjualanRequest) (*model.PenjualanResponse, error)
 	GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error)
+	CalculatePriceAfterDiscount(ctx context.Context, request *model.PriceAfterDiscountRequest) (*model.PriceAfterDiscountResponse, error)
 }
 
 type OrderServiceImpl struct {
@@ -43,5 +45,25 @@ func (s OrderServiceImpl) GetTotalPriceDetail(ctx context.Context, request *mode
 	return &model.TotalPriceResponse{
 		NetSales: netSales,
 		PajakRp:  pajakRp,
+	}, nil
+}
+
+func (s OrderServiceImpl) CalculatePriceAfterDiscount(ctx context.Context, request *model.PriceAfterDiscountRequest) (*model.PriceAfterDiscountResponse, error) {
+	totalPrice := request.TotalSebelumDiskon
+	totalDiskon := 0.0
+
+	for _, d := range request.Discounts {
+		discountInt, err := strconv.Atoi(d.Diskon)
+		helper.PanicIfError(err)
+
+		diskon := totalPrice * (float64(discountInt) / 100)
+		totalDiskon += diskon
+
+		totalPrice -= diskon
+	}
+
+	return &model.PriceAfterDiscountResponse{
+		TotalDiskon:             totalDiskon,
+		TotalHargaSetelahDiskon: totalPrice,
 	}, nil
 }

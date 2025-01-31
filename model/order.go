@@ -41,6 +41,21 @@ type TotalPriceResponse struct {
 	Message  string  `json:"message,omitempty"`
 }
 
+type Discount struct {
+	Diskon string `json:"diskon"`
+}
+
+type PriceAfterDiscountRequest struct {
+	Discounts          []Discount `json:"discounts"`
+	TotalSebelumDiskon float64    `json:"total_sebelum_diskon"`
+}
+
+type PriceAfterDiscountResponse struct {
+	TotalDiskon             float64 `json:"total_diskon"`
+	TotalHargaSetelahDiskon float64 `json:"total_harga_setelah_diskon"`
+	Message                 string  `json:"message,omitempty"`
+}
+
 func (m *Penjualan) FromPenjualanRequest(request *PenjualanRequest) {
 	tanggalConverted, _ := convertTanggal(request.Tanggal)
 	jamConverted, _ := convertJam(request.Tanggal, request.Jam)
