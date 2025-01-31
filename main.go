@@ -20,8 +20,8 @@ func main() {
 
 	router := httprouter.New()
 	router.POST("/api/order", orderController.Save)
-	router.GET("/api/price-detail", orderController.GetTotalPriceDetail)
-	router.POST("/api/price-discount", orderController.CalculatePriceAfterDiscount)
+	router.GET("/api/order/price-detail", orderController.GetTotalPriceDetail)
+	router.POST("/api/order/price-discount", orderController.CalculatePriceAfterDiscount)
 
 	server := http.Server{
 		Addr:    "localhost:8080",
