@@ -9,21 +9,21 @@ import (
 	"net/http"
 )
 
-type OrderController interface {
+type PenjualanController interface {
 	Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	GetTotalPriceDetail(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	CalculatePriceAfterDiscount(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
-type OrderControllerImpl struct {
-	OrderService service.OrderService
+type PenjualanControllerImpl struct {
+	PenjualanService service.PenjualanService
 }
 
-func NewOrderControllerImpl(orderService service.OrderService) *OrderControllerImpl {
-	return &OrderControllerImpl{OrderService: orderService}
+func NewPenjualanControllerImpl(penjualanService service.PenjualanService) *PenjualanControllerImpl {
+	return &PenjualanControllerImpl{PenjualanService: penjualanService}
 }
 
-func (c OrderControllerImpl) Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func (c PenjualanControllerImpl) Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var penjualanRequest = model.PenjualanRequest{}
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&penjualanRequest)
@@ -31,7 +31,7 @@ func (c OrderControllerImpl) Save(writer http.ResponseWriter, request *http.Requ
 
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
-	response, err := c.OrderService.Save(request.Context(), &penjualanRequest)
+	response, err := c.PenjualanService.Save(request.Context(), &penjualanRequest)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		response.Message = "Terjadi Internal server error"
@@ -45,7 +45,7 @@ func (c OrderControllerImpl) Save(writer http.ResponseWriter, request *http.Requ
 	helper.PanicIfError(err)
 }
 
-func (c OrderControllerImpl) GetTotalPriceDetail(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func (c PenjualanControllerImpl) GetTotalPriceDetail(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var priceRequest = model.TotalPriceRequest{}
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&priceRequest)
@@ -53,7 +53,7 @@ func (c OrderControllerImpl) GetTotalPriceDetail(writer http.ResponseWriter, req
 
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
-	response, err := c.OrderService.GetTotalPriceDetail(request.Context(), &priceRequest)
+	response, err := c.PenjualanService.GetTotalPriceDetail(request.Context(), &priceRequest)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -68,7 +68,7 @@ func (c OrderControllerImpl) GetTotalPriceDetail(writer http.ResponseWriter, req
 	helper.PanicIfError(err)
 }
 
-func (c OrderControllerImpl) CalculatePriceAfterDiscount(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func (c PenjualanControllerImpl) CalculatePriceAfterDiscount(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var priceDiscountRequest = model.PriceAfterDiscountRequest{}
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&priceDiscountRequest)
@@ -76,7 +76,7 @@ func (c OrderControllerImpl) CalculatePriceAfterDiscount(writer http.ResponseWri
 
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
-	response, err := c.OrderService.CalculatePriceAfterDiscount(request.Context(), &priceDiscountRequest)
+	response, err := c.PenjualanService.CalculatePriceAfterDiscount(request.Context(), &priceDiscountRequest)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)

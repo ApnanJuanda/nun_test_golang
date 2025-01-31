@@ -7,18 +7,18 @@ import (
 	"database/sql"
 )
 
-type OrderRepository interface {
+type PenjualanRepository interface {
 	Save(ctx context.Context, tx *sql.Tx, penjualan *model.Penjualan) (*model.Penjualan, error)
 }
 
-type OrderRepositoryImpl struct {
+type PenjualanRepositoryImpl struct {
 }
 
-func NewOrderRepositoryImpl() *OrderRepositoryImpl {
-	return &OrderRepositoryImpl{}
+func NewPenjualanRepositoryImpl() *PenjualanRepositoryImpl {
+	return &PenjualanRepositoryImpl{}
 }
 
-func (r OrderRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, penjualan *model.Penjualan) (*model.Penjualan, error) {
+func (r PenjualanRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, penjualan *model.Penjualan) (*model.Penjualan, error) {
 	addPenjualanQuery := "INSERT INTO penjualan(nama_pelanggan, tanggal, jam, total, bayar_tunai, kembali) VALUES (?, ?, ?, ?, ?, ?)"
 	result, err := tx.ExecContext(ctx, addPenjualanQuery, penjualan.NamaPelanggan, penjualan.Tanggal,
 		penjualan.Jam, penjualan.Total, penjualan.BayarTunai, penjualan.Kembali)

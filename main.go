@@ -14,14 +14,14 @@ import (
 
 func main() {
 	db := config.GetMyConnection()
-	orderRepository := repository.NewOrderRepositoryImpl()
-	orderService := service.NewOrderServiceImpl(orderRepository, db)
-	orderController := controller.NewOrderControllerImpl(orderService)
+	penjualanRepository := repository.NewPenjualanRepositoryImpl()
+	penjualanService := service.NewPenjualanServiceImpl(penjualanRepository, db)
+	penjualanController := controller.NewPenjualanControllerImpl(penjualanService)
 
 	router := httprouter.New()
-	router.POST("/api/order", orderController.Save)
-	router.GET("/api/order/price-detail", orderController.GetTotalPriceDetail)
-	router.POST("/api/order/price-discount", orderController.CalculatePriceAfterDiscount)
+	router.POST("/api/penjualan", penjualanController.Save)
+	router.GET("/api/penjualan/price-detail", penjualanController.GetTotalPriceDetail)
+	router.POST("/api/penjualan/price-discount", penjualanController.CalculatePriceAfterDiscount)
 
 	server := http.Server{
 		Addr:    "localhost:8080",

@@ -9,29 +9,29 @@ import (
 	"strconv"
 )
 
-type OrderService interface {
+type PenjualanService interface {
 	Save(ctx context.Context, request *model.PenjualanRequest) (*model.PenjualanResponse, error)
 	GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error)
 	CalculatePriceAfterDiscount(ctx context.Context, request *model.PriceAfterDiscountRequest) (*model.PriceAfterDiscountResponse, error)
 }
 
-type OrderServiceImpl struct {
-	OrderRepository repository.OrderRepository
-	DB              *sql.DB
+type PenjualanServiceImpl struct {
+	PenjualanRepository repository.PenjualanRepository
+	DB                  *sql.DB
 }
 
-func NewOrderServiceImpl(orderRepository repository.OrderRepository, DB *sql.DB) *OrderServiceImpl {
-	return &OrderServiceImpl{OrderRepository: orderRepository, DB: DB}
+func NewPenjualanServiceImpl(penjualanRepository repository.PenjualanRepository, DB *sql.DB) *PenjualanServiceImpl {
+	return &PenjualanServiceImpl{PenjualanRepository: penjualanRepository, DB: DB}
 }
 
-func (s OrderServiceImpl) Save(ctx context.Context, request *model.PenjualanRequest) (*model.PenjualanResponse, error) {
+func (s PenjualanServiceImpl) Save(ctx context.Context, request *model.PenjualanRequest) (*model.PenjualanResponse, error) {
 	tx, err := s.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	var penjualanModel = new(model.Penjualan)
 	penjualanModel.FromPenjualanRequest(request)
-	penjualanModel, err = s.OrderRepository.Save(ctx, tx, penjualanModel)
+	penjualanModel, err = s.PenjualanRepository.Save(ctx, tx, penjualanModel)
 	helper.PanicIfError(err)
 
 	return &model.PenjualanResponse{
@@ -39,7 +39,7 @@ func (s OrderServiceImpl) Save(ctx context.Context, request *model.PenjualanRequ
 	}, nil
 }
 
-func (s OrderServiceImpl) GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error) {
+func (s PenjualanServiceImpl) GetTotalPriceDetail(ctx context.Context, request *model.TotalPriceRequest) (*model.TotalPriceResponse, error) {
 	netSales := request.Total / (1 + (request.PersenPajak / 100))
 	pajakRp := request.Total - netSales
 	return &model.TotalPriceResponse{
@@ -48,7 +48,7 @@ func (s OrderServiceImpl) GetTotalPriceDetail(ctx context.Context, request *mode
 	}, nil
 }
 
-func (s OrderServiceImpl) CalculatePriceAfterDiscount(ctx context.Context, request *model.PriceAfterDiscountRequest) (*model.PriceAfterDiscountResponse, error) {
+func (s PenjualanServiceImpl) CalculatePriceAfterDiscount(ctx context.Context, request *model.PriceAfterDiscountRequest) (*model.PriceAfterDiscountResponse, error) {
 	totalPrice := request.TotalSebelumDiskon
 	totalDiskon := 0.0
 
